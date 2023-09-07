@@ -26,7 +26,26 @@ object Main {
   /**
    * Exercise 2
    */
-  def balance(chars: List[Char]): Boolean = ???
+  def balance(chars: List[Char]): Boolean = {
+    val count = 0
+    _balance(chars, count)
+  }
+
+  def _balance(chars: List[Char], count: Int): Boolean = {
+    if (chars.isEmpty)
+      (count == 0)
+    else {
+      if (chars.head == '(')
+        count = count + 1
+      else if (chars.head == ')')
+        count = count - 1
+      
+      if (count < 0)
+        false
+      else
+        _balance(chars.tail, count)
+    }
+  }
 
   /**
    * Exercise 3
