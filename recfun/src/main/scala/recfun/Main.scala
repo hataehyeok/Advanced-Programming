@@ -27,23 +27,27 @@ object Main {
    * Exercise 2
    */
   def balance(chars: List[Char]): Boolean = {
-    val count = 0
-    _balance(chars, count)
+    _balance(chars, 0)
   }
 
   def _balance(chars: List[Char], count: Int): Boolean = {
-    if (chars.isEmpty)
-      (count == 0)
+    if (chars.isEmpty && (count == 0))
+      true
     else {
-      if (chars.head == '(')
-        count = count + 1
-      else if (chars.head == ')')
-        count = count - 1
-      
-      if (count < 0)
-        false
-      else
+      if (chars.head == '(') {
+        if (count + 1 < 0)
+          false
+        else
+          _balance(chars.tail, count + 1)
+      }
+      else if (chars.head == ')') {
+        if (count - 1 < 0)
+          false
+        else
+          _balance(chars.tail, count - 1)
+      } else {
         _balance(chars.tail, count)
+      }
     }
   }
 
