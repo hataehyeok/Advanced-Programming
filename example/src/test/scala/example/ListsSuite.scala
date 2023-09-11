@@ -117,6 +117,18 @@ class ListsSuite extends FunSuite {
   test("sum of a few numbers") {
     assert(sum(List(1,2,0)) === 3)
   }
+
+  test("sum of empty list") {
+    assert(sum(List()) === 0)
+  }
+
+  test("sum of case with negative number") {
+    assert(sum(List(13, 32, -89)) === -44)
+  }
+
+  test("sum of list having only zero") {
+    assert(sum(List(0, 0, 0)) === 0)
+  }
   
   test("max of a few numbers") {
     assert(max(List(3, 7, 2)) === 7)
