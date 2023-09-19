@@ -23,28 +23,19 @@ object Main {
    * Exercise 2
    */
   def balance(chars: List[Char]): Boolean = {
+    def _balance(chars: List[Char], count: Int): Boolean = {
+      if (chars.isEmpty && (count == 0)) true
+      else if (count < 0) false
+      else {
+        val head: Char = chars.head
+        head match {
+          case '(' => _balance(chars.tail, count + 1)
+          case ')' => _balance(chars.tail, count - 1)
+          case _ => _balance(chars.tail, count)
+          }
+        }
+      }
     _balance(chars, 0)
-  }
-
-  def _balance(chars: List[Char], count: Int): Boolean = {
-    if (chars.isEmpty && (count == 0))
-      true
-    else {
-      if (chars.head == '(') {
-        if (count + 1 < 0)
-          false
-        else
-          _balance(chars.tail, count + 1)
-      }
-      else if (chars.head == ')') {
-        if (count - 1 < 0)
-          false
-        else
-          _balance(chars.tail, count - 1)
-      } else {
-        _balance(chars.tail, count)
-      }
-    }
   }
 
   /**
