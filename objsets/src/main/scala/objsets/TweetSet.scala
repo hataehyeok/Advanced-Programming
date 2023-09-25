@@ -77,7 +77,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-    def descendingByRetweet: TweetList = ???
+    def descendingByRetweet: TweetList
   
   /**
    * The following methods are already implemented
@@ -108,8 +108,11 @@ abstract class TweetSet {
 }
 
 class Empty extends TweetSet {
-    def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = ???
-  
+    def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
+
+  def mostRetweeted: Tweet = throw new NoSuchElementException()
+
+  def descendingByRetweet: TweetList = Nil
   /**
    * The following methods are already implemented
    */
@@ -125,9 +128,25 @@ class Empty extends TweetSet {
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
-    def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = ???
-  
-    
+    def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
+      val updatedAcc: TweetSet = if (p(elem)) acc.incl(elem) else acc
+      left.filterAcc(p, right.filterAcc(p, updatedAcc))
+    }
+
+  def getMaxRetweeted(current: Tweet, next: Tweet): Tweet = {
+    if (current.retweets >= next.retweets) current else next
+  }
+  def mostRetweeted: Tweet = {
+    try {
+      val nextMostRetweeted = remove(elem).mostRetweeted
+      getMaxRetweeted(elem, nextMostRetweeted)
+    } catch {
+      case _: NoSuchElementException => elem
+    }
+  }
+
+  def descendingByRetweet: TweetList = new Cons(mostRetweeted, remove(mostRetweeted).descendingByRetweet)
+
   /**
    * The following methods are already implemented
    */
@@ -181,14 +200,18 @@ object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-    lazy val googleTweets: TweetSet = ???
-  lazy val appleTweets: TweetSet = ???
+    lazy val googleTweets: TweetSet = {
+      TweetReader.allTweets.filter(tweet => google.exists(tweet.text.contains))
+    }
+  lazy val appleTweets: TweetSet = {
+    TweetReader.allTweets.filter(tweet => apple.exists(tweet.text.contains))
+  }
   
   /**
    * A list of all tweets mentioning a keyword from either apple or google,
    * sorted by the number of retweets.
    */
-     lazy val trending: TweetList = ???
+     lazy val trending: TweetList = googleTweets.union(appleTweets).descendingByRetweet
   }
 
 object Main extends App {
