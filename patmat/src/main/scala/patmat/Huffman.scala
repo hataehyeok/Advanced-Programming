@@ -36,7 +36,7 @@ object Huffman {
       case Leaf(char, _) => List(char)
       // exception case???
     }
-  
+
   def makeCodeTree(left: CodeTree, right: CodeTree) =
     Fork(left, right, chars(left) ::: chars(right), weight(left) + weight(right))
 
@@ -108,13 +108,8 @@ object Huffman {
    */
     def combine(trees: List[CodeTree]): List[CodeTree] = {
       if (trees.length < 2) trees
-//      else {
-//        val List(t1, t2) = trees.take(2)
-//        val rest = trees.drop(2)
-//        makeCodeTree(t1, t2) :: rest
-//      }.sortBy(weight)
       else {
-        val List(t1, t2, _*) = trees.sortBy(weight)
+        val List(t1, t2, _*) = trees
         makeCodeTree(t1, t2) :: trees.drop(2)
       }
     }
@@ -161,9 +156,10 @@ object Huffman {
     def decode(tree: CodeTree, bits: List[Bit]): List[Char] = {
       def decodeAcc(currentTree: CodeTree, bits: List[Bit], acc: List[Char]): List[Char] = (currentTree, bits) match {
         case (Leaf(char, _), bs) => decodeAcc(tree, bs, acc :+ char)
-        case (Fork(left, right, _, _), 0 :: bs) => decodeAcc(left, bs, acc)
-        case (Fork(left, right, _, _), 1 :: bs) => decodeAcc(right, bs, acc)
+        case (Fork(left, _, _, _), 0 :: bs) => decodeAcc(left, bs, acc)
+        case (Fork(_, right, _, _), 1 :: bs) => decodeAcc(right, bs, acc)
         case (_, Nil) => acc
+        case _ => throw new Error("Unknown tree or bit sequence")
       }
 
       decodeAcc(tree, bits, List())
